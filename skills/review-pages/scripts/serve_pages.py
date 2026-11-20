@@ -61,6 +61,8 @@ class H(SimpleHTTPRequestHandler):
         if os.path.isdir(path) or not rng or not os.path.isfile(path):
             return super().send_head()
         m = re.match(r"bytes=(\d*)-(\d*)", rng)
+        if not m or not (m.group(1) or m.group(2)):  # 꼴이 틀린 Range는 무시하고 전체(200)
+            return super().send_head()
         size = os.path.getsize(path)
         if m and not m.group(1) and m.group(2):  # bytes=-N: 마지막 N바이트
             start, end = max(0, size - int(m.group(2))), size - 1
