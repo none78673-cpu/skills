@@ -5,6 +5,7 @@ python -I serve_pages.py <폴더> <포트>
 그 페이지가 있는 폴더의 _picks.jsonl 에 한 줄씩 덧붙인다(time은 서버가 채움).
 GET /_pick 은 200 {"pick":1} — 이 서버가 기록을 받는 판인지 확인용(옛 판은 404).
 같은 컴퓨터의 127.0.0.1 페이지에서 온 요청만 받는다(다른 사이트가 몰래 보내는 것 막기).
+Host가 127.0.0.1·localhost가 아닌 요청은 모두 403 — 악성 사이트가 DNS rebinding으로 이 폴더 파일을 읽어 가는 것 막기.
 """
 import json, os, re, sys, time
 from functools import partial
@@ -12,6 +13,16 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote, urlparse
 
 class H(SimpleHTTPRequestHandler):
+    def parse_request(self):
+        if not super().parse_request():
+            return False
+        h = self.headers.get("Host") or ""
+        host = h.split("]")[0] + "]" if h.startswith("[") else h.rsplit(":", 1)[0]
+        if host not in ("127.0.0.1", "localhost", "[::1]"):
+            self.send_error(403, "Host not allowed")
+            return False
+        return True
+
     def do_GET(self):
         if urlparse(self.path).path == "/_pick":
             body = b'{"pick":1}'
@@ -49,8 +60,11 @@ class H(SimpleHTTPRequestHandler):
             return super().send_head()
         m = re.match(r"bytes=(\d*)-(\d*)", rng)
         size = os.path.getsize(path)
-        start = int(m.group(1)) if m and m.group(1) else 0
-        end = int(m.group(2)) if m and m.group(2) else size - 1
+        if m and not m.group(1) and m.group(2):  # bytes=-N: 마지막 N바이트
+            start, end = max(0, size - int(m.group(2))), size - 1
+        else:
+            start = int(m.group(1)) if m and m.group(1) else 0
+            end = int(m.group(2)) if m and m.group(2) else size - 1
         end = min(end, size - 1)
         if start > end:
             self.send_error(416); return None
