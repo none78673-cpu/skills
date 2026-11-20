@@ -1,0 +1,61 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>예시 · 설정 문서 고친 곳 검수</title><style>
+body{background:#14161a;color:#e6e6e6;font:15px/1.6 "Malgun Gothic","Apple SD Gothic Neo",sans-serif;padding:24px;max-width:1180px;margin:0 auto}
+h1{font-size:20px;margin:0 0 14px}
+.ask{background:#1d2026;border:1px solid #e0a040;border-radius:10px;padding:12px 16px;margin:0 0 18px}
+.ask a{color:#6cb6ff}.dim{color:#999;font-size:13px}
+.target{color:#bbb;font-size:13px;margin:0 0 8px}.target code{color:#e5c84a}
+.card{background:#1d2026;border:1.5px dashed #e5c84a;border-radius:10px;padding:12px 16px;margin:0 0 14px}
+.card.new{border-color:#7ddc9a}.card.del{border-color:#f85149}
+.hd b{font-size:15px}.kind{font-size:12px;margin-left:6px;color:#e5c84a}.new .kind{color:#7ddc9a}.del .kind{color:#f85149}
+.ww{color:#aaa;font-size:13px;margin:2px 0 8px}
+.cols{display:flex;gap:12px}.col{flex:1;min-width:0;background:#111317;border-radius:6px;padding:8px;font:13px/1.6 Consolas,"Malgun Gothic",monospace;white-space:pre-wrap}
+.lab{color:#888;font-family:"Malgun Gothic",sans-serif;font-size:12px}
+.m{background:#3a1d1f;color:#ffb3ad}.p{background:#173322;color:#b5f0c6}
+.pick{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.pick button,.allbtn{background:#2a2f37;color:#e6e6e6;border:1px solid #2e333b;border-radius:6px;padding:5px 14px;cursor:pointer;font:inherit}
+.pick button.rec{border-color:#e0a040}.pick button.rec::after{content:" 추천";color:#e0a040;font-size:12px}
+.pick button.on{color:#e0a040;background:#3a2f1a;border-color:#e0a040}
+.pick input{flex:1;min-width:220px;background:#111317;color:#e6e6e6;border:1px solid #2e333b;border-radius:6px;padding:5px 10px;font:inherit}
+.saved{color:#7ddc9a;font-size:12px}
+</style></head><body>
+<h1>배포 설정 문서 고친 곳 검수</h1>
+<div class="ask"><b>먼저 정해 주세요</b><br>
+1–3. 고친 곳마다 넣을지 → <a href="#c1">1</a> · <a href="#c2">2</a> · <a href="#c3">3</a><br>
+<div class="pick"><button class="allbtn" id="allrec">추천대로 모두 고르기</button><span class="saved" id="allsaved"></span></div>
+<span class="dim">바꿀 것만 그 자리에서 다시 누르세요. 채팅으로 답해도 됩니다.</span></div>
+
+<div class="target">대상: <code>docs/deploy.md</code> — 서버에 새 판을 올리는 순서를 적은 문서</div>
+
+<div class="card" id="c1"><div class="hd"><b>1. 올리기 전 시험</b><span class="kind">고침</span></div>
+<div class="ww">무엇: 시험 명령을 바꿈 · 왜: 옛 명령은 일부 시험만 돌려 오류를 놓친 적이 있음</div>
+<div class="cols"><div class="col"><div class="lab">전</div><div class="m">- 올리기 전에 npm test 를 돌린다</div></div>
+<div class="col"><div class="lab">후</div><div class="p">+ 올리기 전에 npm run test:all 을 돌린다</div><div class="p">+ 하나라도 실패하면 올리지 않는다</div></div></div>
+<div class="pick" data-q="1"><button data-v="넣기" class="rec">넣기</button><button data-v="빼기">빼기</button><input placeholder="메모 (선택)"><span class="saved"></span></div></div>
+
+<div class="card new" id="c2"><div class="hd"><b>2. 되돌리는 법</b><span class="kind">새로</span></div>
+<div class="ww">무엇: 문서 끝에 새 절 · 왜: 올린 판에 문제가 있을 때 할 일이 문서에 없었음</div>
+<div class="cols"><div class="col"><div class="lab">전</div>(없음)</div>
+<div class="col"><div class="lab">후</div><div class="p">+ ## 되돌리기</div><div class="p">+ 바로 앞 판의 태그로 다시 올린다: deploy --tag v1.4.2</div></div></div>
+<div class="pick" data-q="2"><button data-v="넣기" class="rec">넣기</button><button data-v="빼기">빼기</button><input placeholder="메모 (선택)"><span class="saved"></span></div></div>
+
+<div class="card del" id="c3"><div class="hd"><b>3. 옛 서버 주소</b><span class="kind">지움</span></div>
+<div class="ww">무엇: 더 안 쓰는 주소 줄 · 왜: 지난달에 서버를 옮겨 이 주소로는 안 열림</div>
+<div class="cols"><div class="col"><div class="lab">전</div><div class="m">- 시험 서버: old-staging.example.com</div></div>
+<div class="col"><div class="lab">후</div>(지움)</div></div>
+<div class="pick" data-q="3"><button data-v="넣기" class="rec">넣기</button><button data-v="빼기">빼기</button><input placeholder="메모 (선택)"><span class="saved"></span></div></div>
+
+<script>
+const ROUND = '2026-11-21T00:00';
+document.querySelectorAll('.pick[data-q]').forEach(box => {
+  const note = box.querySelector('input'), saved = box.querySelector('.saved'), btns = box.querySelectorAll('button');
+  let choice = '';
+  async function send() {
+    try { const r = await fetch('/_pick', {method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({page: decodeURIComponent(location.pathname), round: ROUND, q: box.dataset.q, choice, note: note ? note.value : ''})});
+      saved.textContent = r.ok ? '기록됨' : '기록 안 됨 — 채팅으로'; } catch (e) { saved.textContent = '기록 안 됨 — 채팅으로'; }
+  }
+  btns.forEach(b => b.onclick = () => { btns.forEach(x => x.classList.remove('on')); b.classList.add('on'); choice = b.dataset.v; send(); });
+  if (note) { note.oninput = () => saved.textContent = ''; note.onchange = send; }
+});
+document.getElementById('allrec').onclick = () => { document.querySelectorAll('.pick[data-q] button.rec').forEach(b => b.click()); document.getElementById('allsaved').textContent = '추천대로 골랐어요'; };
+</script></body></html>

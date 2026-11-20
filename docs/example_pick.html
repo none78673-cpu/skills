@@ -1,0 +1,60 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>예시 · 로고 시안 고르기</title><style>
+body{background:#14161a;color:#e6e6e6;font:15px/1.6 "Malgun Gothic","Apple SD Gothic Neo",sans-serif;padding:24px;max-width:1180px;margin:0 auto}
+h1{font-size:20px;margin:0 0 14px}
+.ask{background:#1d2026;border:1px solid #e0a040;border-radius:10px;padding:12px 16px;margin:0 0 18px}
+.ask a{color:#6cb6ff}
+.dim{color:#999;font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:#1d2026;border:1px solid #2e333b;border-radius:10px;padding:14px}
+.card.rec{border:2px solid #e0a040}
+.card h3{margin:0 0 8px;font-size:16px}.card h3 .r{color:#e0a040;font-size:13px;margin-left:6px}
+.art{background:#f4f1ea;border-radius:8px;height:170px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+ul{margin:4px 0 0;padding-left:18px;font-size:13.5px}
+.t{font-size:12px;padding:0 5px;border-radius:4px;margin-right:4px}
+.k{background:#4a2a1a;color:#ffb38a}.m{background:#2a3a4a;color:#9cc8ff}.n{background:#2e333b;color:#bbb}
+.why{margin-top:12px;font-size:14px;color:#e0c890}
+.pick{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.pick button,.allbtn{background:#2a2f37;color:#e6e6e6;border:1px solid #2e333b;border-radius:6px;padding:6px 14px;cursor:pointer;font:inherit}
+.pick button.rec{border-color:#e0a040}.pick button.rec::after{content:" 추천";color:#e0a040;font-size:12px}
+.pick button.on{color:#e0a040;background:#3a2f1a;border-color:#e0a040}
+.pick input{flex:1;min-width:220px;background:#111317;color:#e6e6e6;border:1px solid #2e333b;border-radius:6px;padding:6px 10px;font:inherit}
+.saved{color:#7ddc9a;font-size:12px}
+</style></head><body>
+<h1>새 카페 로고 시안 고르기</h1>
+<div class="ask"><b>먼저 정해 주세요</b><br>
+1. 로고 시안 A·B·C 중 어느 쪽 → <a href="#q1">1</a><br>
+<div class="pick"><button class="allbtn" id="allrec">추천대로 모두 고르기</button><span class="saved" id="allsaved"></span></div>
+<span class="dim">바꿀 것만 그 자리에서 다시 누르세요. 채팅으로 답해도 됩니다.</span></div>
+
+<div id="q1"><b>1. 로고 시안 A·B·C 중 어느 쪽</b></div>
+<div class="cards" style="margin-top:10px">
+<div class="card"><h3>A · 원형 엠블럼</h3>
+<div class="art"><svg width="150" height="150" viewBox="0 0 150 150"><circle cx="75" cy="75" r="68" fill="none" stroke="#3b2a20" stroke-width="5"/><circle cx="75" cy="75" r="56" fill="none" stroke="#3b2a20" stroke-width="1.5"/><path d="M52 70h40v18a20 20 0 0 1-40 0z" fill="#3b2a20"/><path d="M92 74h6a8 8 0 0 1 0 16h-6" fill="none" stroke="#3b2a20" stroke-width="4"/><path d="M62 52q6 6 0 12M74 50q6 6 0 12" stroke="#3b2a20" stroke-width="3" fill="none"/><text x="75" y="122" font-size="12" text-anchor="middle" fill="#3b2a20" font-family="Georgia">SINCE 2026</text></svg></div>
+<ul><li><span class="t m">중요</span>간판·컵 도장에 잘 어울림</li><li><span class="t k">핵심</span>작게 줄이면 글자가 뭉개짐</li></ul></div>
+
+<div class="card rec"><h3>B · 글자만<span class="r">추천</span></h3>
+<div class="art"><svg width="220" height="90" viewBox="0 0 220 90"><text x="110" y="52" font-size="46" text-anchor="middle" fill="#3b2a20" font-family="Georgia" font-weight="bold">mellow</text><rect x="70" y="64" width="80" height="4" fill="#d9822b"/></svg></div>
+<ul><li><span class="t k">핵심</span>앱 아이콘·SNS 프로필 크기에서도 읽힘</li><li><span class="t n">참고</span>개성이 덜해 보일 수 있음</li></ul></div>
+
+<div class="card"><h3>C · 그림 + 글자</h3>
+<div class="art"><svg width="220" height="110" viewBox="0 0 220 110"><circle cx="45" cy="55" r="30" fill="#d9822b"/><path d="M33 50h24v10a12 12 0 0 1-24 0z" fill="#f4f1ea"/><text x="85" y="66" font-size="32" fill="#3b2a20" font-family="Georgia">mellow</text></svg></div>
+<ul><li><span class="t m">중요</span>무엇을 파는 곳인지 바로 보임</li><li><span class="t m">중요</span>가로로 길어 정사각 자리에 안 맞음</li></ul></div>
+</div>
+<div class="why">추천 이유: B — 로고가 가장 많이 쓰일 곳이 휴대폰 화면의 작은 아이콘이라, 작게 줄여도 읽힌다는 점이 개성보다 무거움 (세 시안을 48px로 줄여 비교함).</div>
+<div class="pick" data-q="1"><button data-v="A">A</button><button data-v="B" class="rec">B</button><button data-v="C">C</button><input placeholder="메모 (선택)"><span class="saved"></span></div>
+
+<script>
+const ROUND = '2026-11-21T00:00';
+document.querySelectorAll('.pick[data-q]').forEach(box => {
+  const note = box.querySelector('input'), saved = box.querySelector('.saved'), btns = box.querySelectorAll('button');
+  let choice = '';
+  async function send() {
+    try { const r = await fetch('/_pick', {method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({page: decodeURIComponent(location.pathname), round: ROUND, q: box.dataset.q, choice, note: note ? note.value : ''})});
+      saved.textContent = r.ok ? '기록됨' : '기록 안 됨 — 채팅으로'; } catch (e) { saved.textContent = '기록 안 됨 — 채팅으로'; }
+  }
+  btns.forEach(b => b.onclick = () => { btns.forEach(x => x.classList.remove('on')); b.classList.add('on'); choice = b.dataset.v; send(); });
+  if (note) { note.oninput = () => saved.textContent = ''; note.onchange = send; }
+});
+document.getElementById('allrec').onclick = () => { document.querySelectorAll('.pick[data-q] button.rec').forEach(b => b.click()); document.getElementById('allsaved').textContent = '추천대로 골랐어요'; };
+</script></body></html>
