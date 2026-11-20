@@ -56,5 +56,5 @@ document.querySelectorAll('.pick[data-q]').forEach(box => {
   btns.forEach(b => b.onclick = () => { btns.forEach(x => x.classList.remove('on')); b.classList.add('on'); choice = b.dataset.v; send(); });
   if (note) { note.oninput = () => saved.textContent = ''; note.onchange = send; }
 });
-document.getElementById('allrec').onclick = () => { document.querySelectorAll('.pick[data-q] button.rec').forEach(b => b.click()); document.getElementById('allsaved').textContent = '추천대로 골랐어요'; };
+document.getElementById('allrec').onclick = () => { let n = 0; document.querySelectorAll('.pick[data-q]').forEach(box => { const rec = box.querySelector('button.rec'); if (rec && !box.querySelector('button.on')) { rec.click(); n++; } }); document.getElementById('allsaved').textContent = n + '개 추천대로 고름'; };
 </script></body></html>

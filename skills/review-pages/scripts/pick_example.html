@@ -7,7 +7,7 @@ body{background:#14161a;color:#e6e6e6;font:15px/1.6 "Malgun Gothic",sans-serif;p
 .q{background:#1d2026;border:1px solid #2e333b;border-radius:10px;padding:12px 16px;margin:0 0 14px}
 .pick{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .pick button,.allbtn{background:#2a2f37;color:#e6e6e6;border:1px solid #2e333b;border-radius:6px;padding:6px 14px;cursor:pointer;font:inherit}
-.pick button.rec{border-color:#e0a040}.pick button.rec::after{content:" 추천";color:#e0a040;font-size:12px}
+.pick button.rec{border-color:#e0a040}.pick button.rec:not(.fill)::after{content:" 추천";color:#e0a040;font-size:12px}
 .pick button.on{color:#e0a040;background:#3a2f1a;border-color:#e0a040}
 .allbtn{border-color:#e0a040;color:#e0a040}
 .pick input{flex:1;min-width:200px;background:#111317;color:#e6e6e6;border:1px solid #2e333b;border-radius:6px;padding:6px 10px;font:inherit}
@@ -25,15 +25,15 @@ body{background:#14161a;color:#e6e6e6;font:15px/1.6 "Malgun Gothic",sans-serif;p
 <div class="pick" data-q="1"><button data-v="A" class="rec">A</button><button data-v="B">B</button><input placeholder="메모 (선택)"><span class="saved"></span></div>
 <div class="why">추천 이유: (좋은 점이 걸리는 점보다 왜 무거운지, 본 곳 — 내 판단뿐이면 (추정))</div></div>
 
-<!-- 보기 없는 질문: 입력 칸이 답. 추천 답이 있으면 「추천: …」 버튼 -->
+<!-- 보기 없는 질문: data-kind="input", 입력 칸이 답. 추천 답이 있으면 「추천: …」 버튼(class="rec fill" — 누르면 칸을 채움, 「 추천」 꼬리표는 안 붙음) -->
 <div class="q" id="q2">2. 언제 할까요
-<div class="pick" data-q="2"><input placeholder="예: 내일 저녁"><button data-v="내일 저녁" class="rec">추천: 내일 저녁</button><span class="saved"></span></div></div>
+<div class="pick" data-q="2" data-kind="input"><input placeholder="예: 내일 저녁"><button data-v="내일 저녁" class="rec fill">추천: 내일 저녁</button><span class="saved"></span></div></div>
 
 <script>
 const ROUND = '2026-01-01T00:00'; // 페이지를 만들 때 지금 시각으로 바꾼다
 document.querySelectorAll('.pick[data-q]').forEach(box => {
   const note = box.querySelector('input'), saved = box.querySelector('.saved'), btns = box.querySelectorAll('button');
-  const inputOnly = !!note && [...btns].every(b => b.textContent.startsWith('추천:'));
+  const inputOnly = box.dataset.kind === 'input';  // 표시 글자가 아니라 data-kind로 가른다
   let choice = null;
   const send = async () => {
     try {
@@ -49,12 +49,19 @@ document.querySelectorAll('.pick[data-q]').forEach(box => {
   });
   if (note) {
     note.oninput = () => { saved.textContent = ''; };
-    note.onchange = () => { if (choice || inputOnly || !btns.length) send(); };
+    note.onchange = () => send();  // 보기를 안 골라도 메모만으로 기록 (choice는 null)
   }
 });
+// 아직 답하지 않은 질문만 추천으로 — 이미 고른 보기·적어 둔 입력 칸은 건드리지 않는다
 document.getElementById('allrec').onclick = () => {
-  const recs = document.querySelectorAll('.pick[data-q] button.rec');
-  recs.forEach(b => b.click());
-  document.getElementById('allsaved').textContent = recs.length + '개 추천대로 고름';
+  let n = 0;
+  document.querySelectorAll('.pick[data-q]').forEach(box => {
+    const rec = box.querySelector('button.rec');
+    if (!rec) return;
+    const input = box.querySelector('input');
+    const answered = box.dataset.kind === 'input' ? !!(input && input.value.trim()) : !!box.querySelector('button.on');
+    if (!answered) { rec.click(); n++; }
+  });
+  document.getElementById('allsaved').textContent = n + '개 추천대로 고름';
 };
 </script></body></html>

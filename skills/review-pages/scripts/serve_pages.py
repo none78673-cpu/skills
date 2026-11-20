@@ -43,6 +43,8 @@ class H(SimpleHTTPRequestHandler):
             if n > 100_000:
                 self.send_error(413); return
             data = json.loads(self.rfile.read(n) or b"{}")
+            if not isinstance(data, dict):
+                raise ValueError("JSON 객체({...})만 받는다")
             page = str(data.get("page") or unquote(urlparse(self.headers.get("Referer") or "").path)).lstrip("/")
             data["page"] = page
             data["time"] = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -50,7 +52,7 @@ class H(SimpleHTTPRequestHandler):
             with open(os.path.join(folder, "_picks.jsonl"), "a", encoding="utf-8") as f:
                 f.write(json.dumps(data, ensure_ascii=False) + "\n")
         except (ValueError, OSError) as e:
-            self.send_error(400, str(e)); return
+            self.send_error(400, "Bad pick request", str(e)); return  # 둘째 칸(상태 줄)은 영어만 — 한글이면 응답이 깨짐
         self.send_response(204); self.end_headers()
 
     def send_head(self):

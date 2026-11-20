@@ -4,6 +4,7 @@
 - 콘솔 오류·스크립트 오류·못 불러온 파일이 없나
 - 가로로 넘치나(1280 폭 기준, 넘친 요소 몇 개를 알려 줌)
 - 「먼저 정해 주세요」가 있으면 첫 화면(1280x800) 안에 보이나
+- 고르는 추천 버튼(넣기·빼기 말고)이 있으면 「추천 이유」 글이 있나
 - 페이지가 /_pick 으로 고른 것을 보내면, 이 서버가 기록을 받는 판인가(GET /_pick 200)
 - 첫 화면 스크린숏을 남긴다 — 에이전트가 열어서 본다
 
@@ -51,6 +52,10 @@ try:
         }""")
         if ask is not None and ask > 800:
             problems.append(f"「먼저 정해 주세요」가 첫 화면 밖(위에서 {int(ask)}px)")
+        need_why = pg.evaluate("""() => [...document.querySelectorAll('button.rec')]
+          .some(b => !['넣기', '빼기'].includes(b.dataset.v || ''))""")
+        if need_why and '추천 이유' not in pg.inner_text('body'):
+            problems.append("추천 버튼은 있는데 「추천 이유」 글이 없음 — 추천 아래에 이유 한두 문장")
         if "/_pick" in pg.content():
             ok = pg.evaluate("() => fetch('/_pick').then(r => r.status).catch(() => 0)")
             if ok != 200:
