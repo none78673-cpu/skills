@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><title>고른 것 기록 틀</title>
+<!-- review-pages.md 2.1·2.2·2.6 틀. 복사해서 질문·보기·추천만 바꾼다 -->
+<style>
+body{background:#14161a;color:#e6e6e6;font:15px/1.6 "Malgun Gothic",sans-serif;padding:24px;max-width:900px;margin:0 auto}
+.ask{border:1px solid #e0a040;border-radius:10px;padding:12px 16px;margin:0 0 20px}.ask a{color:#e0a040}
+.q{background:#1d2026;border:1px solid #2e333b;border-radius:10px;padding:12px 16px;margin:0 0 14px}
+.pick{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.pick button,.allbtn{background:#2a2f37;color:#e6e6e6;border:1px solid #2e333b;border-radius:6px;padding:6px 14px;cursor:pointer;font:inherit}
+.pick button.rec{border-color:#e0a040}.pick button.rec::after{content:" 추천";color:#e0a040;font-size:12px}
+.pick button.on{color:#e0a040;background:#3a2f1a;border-color:#e0a040}
+.allbtn{border-color:#e0a040;color:#e0a040}
+.pick input{flex:1;min-width:200px;background:#111317;color:#e6e6e6;border:1px solid #2e333b;border-radius:6px;padding:6px 10px;font:inherit}
+.saved{color:#9fe0a8;font-size:13px}.why{font-size:13px;color:#f0d890;margin-top:4px}.dim{color:#9aa3ad;font-size:13px}
+</style></head>
+<body>
+<div class="ask"><b>먼저 정해 주세요</b><br>
+1. A와 B 중 어느 쪽 → <a href="#q1">1</a><br>
+2. 언제 할까요 → <a href="#q2">2</a><br>
+<div class="pick"><button class="allbtn" id="allrec">추천대로 모두 고르기</button><span class="saved" id="allsaved"></span></div>
+<span class="dim">바꿀 것만 그 자리에서 다시 누르세요. 채팅엔 「골랐어」만, 채팅으로 답하셔도 됩니다.</span></div>
+
+<!-- 보기 있는 질문: 보기마다 버튼(data-v = 기록될 값), 메모 칸은 질문에 하나 -->
+<div class="q" id="q1">1. A와 B 중 어느 쪽
+<div class="pick" data-q="1"><button data-v="A" class="rec">A</button><button data-v="B">B</button><input placeholder="메모 (선택)"><span class="saved"></span></div>
+<div class="why">추천 이유: (좋은 점이 걸리는 점보다 왜 무거운지, 본 곳 — 내 판단뿐이면 (추정))</div></div>
+
+<!-- 보기 없는 질문: 입력 칸이 답. 추천 답이 있으면 「추천: …」 버튼 -->
+<div class="q" id="q2">2. 언제 할까요
+<div class="pick" data-q="2"><input placeholder="예: 내일 저녁"><button data-v="내일 저녁" class="rec">추천: 내일 저녁</button><span class="saved"></span></div></div>
+
+<script>
+const ROUND = '2026-01-01T00:00'; // 페이지를 만들 때 지금 시각으로 바꾼다
+document.querySelectorAll('.pick[data-q]').forEach(box => {
+  const note = box.querySelector('input'), saved = box.querySelector('.saved'), btns = box.querySelectorAll('button');
+  const inputOnly = !!note && [...btns].every(b => b.textContent.startsWith('추천:'));
+  let choice = null;
+  const send = async () => {
+    try {
+      const r = await fetch('/_pick', {method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({page: decodeURIComponent(location.pathname), round: ROUND, q: box.dataset.q, choice, note: note ? note.value : ''})});
+      saved.textContent = r.ok ? '기록됨' : '기록 실패 — 채팅으로 알려 주세요';
+    } catch (e) { saved.textContent = '기록 실패 — 채팅으로 알려 주세요'; }
+  };
+  btns.forEach(btn => btn.onclick = () => {
+    if (inputOnly) { note.value = btn.dataset.v; choice = null; } else { choice = btn.dataset.v; }
+    btns.forEach(b => b.classList.toggle('on', b === btn));
+    send();
+  });
+  if (note) {
+    note.oninput = () => { saved.textContent = ''; };
+    note.onchange = () => { if (choice || inputOnly || !btns.length) send(); };
+  }
+});
+document.getElementById('allrec').onclick = () => {
+  const recs = document.querySelectorAll('.pick[data-q] button.rec');
+  recs.forEach(b => b.click());
+  document.getElementById('allsaved').textContent = recs.length + '개 추천대로 고름';
+};
+</script></body></html>
