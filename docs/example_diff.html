@@ -30,19 +30,19 @@ h1{font-size:20px;margin:0 0 14px}
 <div class="ww">무엇: 시험 명령을 바꿈 · 왜: 옛 명령은 일부 시험만 돌려 오류를 놓친 적이 있음</div>
 <div class="cols"><div class="col"><div class="lab">전</div><div class="m">- 올리기 전에 npm test 를 돌린다</div></div>
 <div class="col"><div class="lab">후</div><div class="p">+ 올리기 전에 npm run test:all 을 돌린다</div><div class="p">+ 하나라도 실패하면 올리지 않는다</div></div></div>
-<div class="pick" data-q="1"><button data-v="넣기" class="rec">넣기</button><button data-v="빼기">빼기</button><input placeholder="메모 (선택)"><span class="saved"></span></div></div>
+<div class="pick" data-q="카드1"><button data-v="넣기" class="rec">넣기</button><button data-v="빼기">빼기</button><input placeholder="메모 (선택)"><span class="saved"></span></div></div>
 
 <div class="card new" id="c2"><div class="hd"><b>2. 되돌리는 법</b><span class="kind">새로</span></div>
 <div class="ww">무엇: 문서 끝에 새 절 · 왜: 올린 판에 문제가 있을 때 할 일이 문서에 없었음</div>
 <div class="cols"><div class="col"><div class="lab">전</div>(없음)</div>
 <div class="col"><div class="lab">후</div><div class="p">+ ## 되돌리기</div><div class="p">+ 바로 앞 판의 태그로 다시 올린다: deploy --tag v1.4.2</div></div></div>
-<div class="pick" data-q="2"><button data-v="넣기" class="rec">넣기</button><button data-v="빼기">빼기</button><input placeholder="메모 (선택)"><span class="saved"></span></div></div>
+<div class="pick" data-q="카드2"><button data-v="넣기" class="rec">넣기</button><button data-v="빼기">빼기</button><input placeholder="메모 (선택)"><span class="saved"></span></div></div>
 
 <div class="card del" id="c3"><div class="hd"><b>3. 옛 서버 주소</b><span class="kind">지움</span></div>
 <div class="ww">무엇: 더 안 쓰는 주소 줄 · 왜: 지난달에 서버를 옮겨 이 주소로는 안 열림</div>
 <div class="cols"><div class="col"><div class="lab">전</div><div class="m">- 시험 서버: old-staging.example.com</div></div>
 <div class="col"><div class="lab">후</div>(지움)</div></div>
-<div class="pick" data-q="3"><button data-v="넣기" class="rec">넣기</button><button data-v="빼기">빼기</button><input placeholder="메모 (선택)"><span class="saved"></span></div></div>
+<div class="pick" data-q="카드3"><button data-v="넣기" class="rec">넣기</button><button data-v="빼기">빼기</button><input placeholder="메모 (선택)"><span class="saved"></span></div></div>
 
 <script>
 const ROUND = '2026-11-21T00:00';

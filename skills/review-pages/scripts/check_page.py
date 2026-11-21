@@ -1,9 +1,9 @@
-"""검수 페이지를 사용자에게 주기 전 점검. python -I check_page.py <주소> <스크린숏.png>
+"""검수 페이지를 사용자에게 주기 전 점검. python check_page.py <주소> <스크린숏.png> (-I 없이 — 사용자 영역에 깐 playwright를 찾게, SKILL.md 3절)
 
 - 주소가 열리나(200)
 - 콘솔 오류·스크립트 오류·못 불러온 파일이 없나
 - 가로로 넘치나(1280 폭 기준, 넘친 요소 몇 개를 알려 줌)
-- 「먼저 정해 주세요」가 있으면 첫 화면(1280x800) 안에 보이나
+- 「먼저 정해 주세요」(답할 것이 없으면 「결론」 한 줄)가 첫 화면(1280x800) 안에 보이나 — 둘 다 없어도 문제
 - 고르는 추천 버튼(넣기·빼기 말고)이 있으면 「추천 이유」 글이 있나
 - 질문(data-q)마다 추천 버튼이 하나 이하인가
 - 페이지 안 링크(#q1 등)가 실제로 있는 자리를 가리키나
@@ -46,14 +46,19 @@ try:
         }""")
         if over:
             problems.append("가로 넘침: " + ", ".join(over))
-        ask = pg.evaluate("""() => {
+        top_of = """(word) => {
           const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-          while (w.nextNode()) if (w.currentNode.textContent.includes('먼저 정해 주세요'))
+          while (w.nextNode()) if (w.currentNode.textContent.includes(word))
             return w.currentNode.parentElement.getBoundingClientRect().top;
           return null;
-        }""")
+        }"""
+        ask = pg.evaluate(top_of, "먼저 정해 주세요")
+        if ask is None:
+            ask = pg.evaluate(top_of, "결론")
+            if ask is None:
+                problems.append("맨 위 「먼저 정해 주세요」도 「결론」 한 줄도 없음 — 답할 것이 없으면 그 자리에 결론 한 줄(2.1)")
         if ask is not None and ask > 800:
-            problems.append(f"「먼저 정해 주세요」가 첫 화면 밖(위에서 {int(ask)}px)")
+            problems.append(f"「먼저 정해 주세요」(또는 결론)가 첫 화면 밖(위에서 {int(ask)}px)")
         need_why = pg.evaluate("""() => [...document.querySelectorAll('button.rec')]
           .some(b => !['넣기', '빼기'].includes(b.dataset.v || ''))""")
         if need_why and '추천 이유' not in pg.inner_text('body'):
