@@ -7,10 +7,12 @@ GET /_pick 은 200 {"pick":1} — 이 서버가 기록을 받는 판인지 확�
 같은 컴퓨터의 127.0.0.1 페이지에서 온 요청만 받는다(다른 사이트가 몰래 보내는 것 막기).
 Host가 127.0.0.1·localhost가 아닌 요청은 모두 403 — 악성 사이트가 DNS rebinding으로 이 폴더 파일을 읽어 가는 것 막기.
 """
-import json, os, re, sys, time
+import json, os, re, sys, threading, time
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote, urlparse
+
+PICK_LOCK = threading.Lock()  # 동시에 온 기록(「추천대로 모두 고르기」)이 섞이거나 사라지지 않게 한 번에 하나씩 쓴다
 
 class H(SimpleHTTPRequestHandler):
     def parse_request(self):
@@ -49,8 +51,9 @@ class H(SimpleHTTPRequestHandler):
             data["page"] = page
             data["time"] = time.strftime("%Y-%m-%d %H:%M:%S")
             folder = os.path.dirname(self.translate_path("/" + page)) if page else self.directory
-            with open(os.path.join(folder, "_picks.jsonl"), "a", encoding="utf-8") as f:
-                f.write(json.dumps(data, ensure_ascii=False) + "\n")
+            line = json.dumps(data, ensure_ascii=False) + "\n"
+            with PICK_LOCK, open(os.path.join(folder, "_picks.jsonl"), "a", encoding="utf-8") as f:
+                f.write(line)
         except (ValueError, OSError) as e:
             self.send_error(400, "Bad pick request", str(e)); return  # 둘째 칸(상태 줄)은 영어만 — 한글이면 응답이 깨짐
         self.send_response(204); self.end_headers()
