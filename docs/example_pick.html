@@ -4,11 +4,15 @@ h1{font-size:20px;margin:0 0 14px}
 .ask{background:#1d2026;border:1px solid #e0a040;border-radius:10px;padding:12px 16px;margin:0 0 18px}
 .ask a{color:#6cb6ff}
 .dim{color:#999;font-size:13px}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.cards{display:grid;grid-template-columns:1fr;gap:14px}
 .card{background:#1d2026;border:1px solid #2e333b;border-radius:10px;padding:14px}
 .card.rec{border:2px solid #e0a040}
 .card h3{margin:0 0 8px;font-size:16px}.card h3 .r{color:#e0a040;font-size:13px;margin-left:6px}
-.art{background:#f4f1ea;border-radius:8px;height:170px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.art{background:#f4f1ea;border-radius:8px;height:300px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;cursor:zoom-in}
+.art svg{height:240px;width:auto}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:9}
+#lb.on{display:flex}#lb .box{background:#f4f1ea;border-radius:10px;width:86vw;height:82vh;display:flex;align-items:center;justify-content:center}#lb svg{height:70vh;width:auto}
+#lb .hint{position:fixed;bottom:14px;left:0;right:0;text-align:center;color:#999;font-size:13px}
 ul{margin:4px 0 0;padding-left:18px;font-size:13.5px}
 .t{font-size:12px;padding:0 5px;border-radius:4px;margin-right:4px}
 .k{background:#4a2a1a;color:#ffb38a}.m{background:#2a3a4a;color:#9cc8ff}.n{background:#2e333b;color:#bbb}
@@ -22,7 +26,7 @@ ul{margin:4px 0 0;padding-left:18px;font-size:13.5px}
 </style></head><body>
 <h1>새 카페 로고 시안 고르기</h1>
 <div class="ask"><b>먼저 정해 주세요</b><br>
-1. 로고 시안 A·B·C 중 어느 쪽 → <a href="#q1">1</a><br>
+<a href="#q1">1. 로고 시안 A·B·C 중 어느 쪽</a> <span class="dim">(추천: B)</span><br>
 <div class="pick"><button class="allbtn" id="allrec">추천대로 모두 고르기</button><span class="saved" id="allsaved"></span></div>
 <span class="dim">바꿀 것만 그 자리에서 다시 누르세요. 채팅으로 답해도 됩니다.</span></div>
 
@@ -57,4 +61,12 @@ document.querySelectorAll('.pick[data-q]').forEach(box => {
   if (note) { note.oninput = () => saved.textContent = ''; note.onchange = send; }
 });
 document.getElementById('allrec').onclick = () => { let n = 0; document.querySelectorAll('.pick[data-q]').forEach(box => { const rec = box.querySelector('button.rec'); if (rec && !box.querySelector('button.on')) { rec.click(); n++; } }); document.getElementById('allsaved').textContent = n + '개 추천대로 고름'; };
+// 그림을 누르면 화면 가득, ←→로 넘기고 Esc로 닫음 (2.1 「그림은 크게, 누르면 화면 가득」)
+const arts = [...document.querySelectorAll('.art')];
+const lb = document.createElement('div'); lb.id = 'lb'; lb.innerHTML = '<div class="box"></div><div class="hint">← → 넘기기 · Esc 닫기</div>'; document.body.appendChild(lb);
+let cur = 0;
+const show = i => { cur = (i + arts.length) % arts.length; lb.querySelector('.box').innerHTML = arts[cur].innerHTML; lb.classList.add('on'); };
+arts.forEach((a, i) => a.onclick = () => show(i));
+lb.onclick = () => lb.classList.remove('on');
+document.addEventListener('keydown', e => { if (!lb.classList.contains('on')) return; if (e.key === 'Escape') lb.classList.remove('on'); if (e.key === 'ArrowRight') show(cur + 1); if (e.key === 'ArrowLeft') show(cur - 1); });
 </script></body></html>
